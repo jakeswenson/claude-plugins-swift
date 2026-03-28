@@ -37,9 +37,27 @@ build --repo_env=APPLE_SUPPORT_LAYERING_CHECK_BETA=0
 
 This disables the check until headers are properly declared.
 
-### 4. rules_xcodeproj 4.x
+### 4. rules_xcodeproj + rules_swift in Xcode Builds
 
 rules_xcodeproj 4.0.0 drops WORKSPACE support and requires Bazel 9. Check release notes for API changes before upgrading.
+
+Two issues affect Xcode builds (via rules_xcodeproj) with Bazel 9 + rules_swift 3.5.0+:
+
+**Swift worker crashes in sandbox**: The rules_swift worker crashes with `filesystem_error: in canonical` when running in `darwin-sandbox` inside the xcodeproj output base. The worker tries to canonicalize `BUILD.bazel` in the sandbox directory where it doesn't exist. Fix by putting `worker` before `sandboxed` in the spawn strategy so Swift compilation uses persistent workers instead:
+
+```
+build:rules_xcodeproj --spawn_strategy=worker,sandboxed,remote,local
+```
+
+**`index-import` not found**: The `build_bazel_rules_swift_index_import_6_1` repo (used for Xcode index-while-building) doesn't resolve in the xcodeproj output base. Fix by disabling the feature:
+
+```
+build:rules_xcodeproj --features=-swift.index_while_building
+```
+
+This trades Xcode's deep indexing for a working build. Code navigation via the generated project structure still works.
+
+Both fixes are compatible with rules_xcodeproj 3.5.1 and 4.0.0.
 
 ## Migration Steps
 
@@ -47,8 +65,9 @@ rules_xcodeproj 4.0.0 drops WORKSPACE support and requires Bazel 9. Check releas
 2. `bazel clean --expunge`
 3. Delete `WORKSPACE` / `WORKSPACE.bazel`
 4. Remove `common --enable_bzlmod` from `.bazelrc`
-5. Add `common --incompatible_autoload_externally=+@rules_cc` to `.bazelrc`
-6. Bump rule versions bottom-up (see dependency tree in the main skill)
-7. `bazel build //...` — fix any remaining errors
-8. `bazel test //...` — verify tests pass
-9. Commit updated `MODULE.bazel`, `MODULE.bazel.lock`, `.bazelrc`, and deleted WORKSPACE
+5. Add `common --incompatible_autoload_externally=+@rules_cc` to `.bazelrc` (if needed)
+6. Fix rules_xcodeproj spawn strategy and index-import in `.bazelrc` (see section 4 above)
+7. Bump rule versions bottom-up (see dependency tree in the main skill)
+8. `bazel build //...` — fix any remaining errors
+9. `bazel test //...` — verify tests pass
+10. Commit updated `MODULE.bazel`, `MODULE.bazel.lock`, `.bazelrc`, and deleted WORKSPACE

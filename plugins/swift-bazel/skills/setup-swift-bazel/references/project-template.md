@@ -36,8 +36,10 @@ Pin to a specific Bazel version. Check https://github.com/bazelbuild/bazel/relea
 # Filter out warnings from external packages (only show output from local code)
 build --output_filter='^//(Apps|Packages)/'
 
-# Required for rules_xcodeproj compatibility
-build:rules_xcodeproj --spawn_strategy=sandboxed,remote,worker,local
+# rules_xcodeproj: worker before sandboxed (rules_swift 3.5.0+ worker crashes in sandbox),
+# disable index-while-building (index-import tool missing in xcodeproj output base).
+build:rules_xcodeproj --spawn_strategy=worker,sandboxed,remote,local
+build:rules_xcodeproj --features=-swift.index_while_building
 ```
 
 Add if any external dep uses `cc_library`/`objc_library` without an explicit `load()` (e.g. `yams` via SwiftLint). Bazel 9 removed these from core:
