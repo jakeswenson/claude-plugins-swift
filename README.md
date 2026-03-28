@@ -19,14 +19,15 @@ When Claude Code detects you're working with Bazel + Swift, this skill automatic
 
 | Rule | Version |
 |------|---------|
-| Bazel | 8.4.2 |
-| apple_support | 1.23.1 |
-| rules_swift | 3.1.2 |
-| rules_apple | 4.2.0 |
-| rules_swift_package_manager | 1.11.0 |
-| rules_xcodeproj | 3.5.1 |
-| swiftlint | 0.62.2 |
-| gazelle | 0.45.0 |
+| Bazel | 9.0.1 |
+| apple_support | 2.5.0 |
+| rules_cc | 0.2.17 |
+| rules_swift | 3.5.0 |
+| rules_apple | 4.5.2 |
+| rules_swift_package_manager | 1.13.0 |
+| rules_xcodeproj | 4.0.0 |
+| swiftlint | 0.63.2 |
+| gazelle | 0.48.0 |
 | swift_gazelle_plugin | 0.2.2 |
 
 ## Installation

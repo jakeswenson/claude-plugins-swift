@@ -102,6 +102,10 @@ After successful build, commit the updated `MODULE.bazel` and `MODULE.bazel.lock
 - gazelle: `https://github.com/bazelbuild/bazel-gazelle/releases`
 - swiftlint: `https://github.com/realm/SwiftLint/releases`
 
+### Bazel Major Version Migration
+
+For major version migrations (e.g., Bazel 8 → 9), read `references/migration-8-to-9.md`. It covers WORKSPACE removal, built-in rule changes, and rule-specific breaking changes.
+
 ## MODULE.bazel Ordering Rules
 
 The order of `bazel_dep` declarations matters:
@@ -117,9 +121,8 @@ When setting up a new Swift Bazel project:
 
 Read `references/project-template.md` for the exact file contents. The key files are:
 - `.bazelversion` — pin the Bazel version
-- `.bazelrc` — enable bzlmod, output filtering, xcodeproj spawn strategy
+- `.bazelrc` — output filtering, xcodeproj spawn strategy
 - `.bazelignore` — exclude `.build` (SPM build directory)
-- `WORKSPACE` — empty file (required alongside MODULE.bazel for bzlmod)
 - `.gitignore` — exclude `bazel-*` symlinks, `.build/`, `*.xcodeproj/`
 
 ### Step 2: Create Package.swift and resolve

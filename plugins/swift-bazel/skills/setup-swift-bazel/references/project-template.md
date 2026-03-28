@@ -8,7 +8,6 @@ This reference contains the full file templates for a new Swift Bazel project. A
 - [.bazelignore](#bazelignore)
 - [.gitignore](#gitignore)
 - [.swiftlint.yml](#swiftlintyml)
-- [WORKSPACE](#workspace)
 - [MODULE.bazel](#modulebazel)
 - [Package.swift](#packageswift)
 - [Root BUILD.bazel](#root-buildbazel)
@@ -28,19 +27,22 @@ This reference contains the full file templates for a new Swift Bazel project. A
 Pin to a specific Bazel version. Check https://github.com/bazelbuild/bazel/releases for latest.
 
 ```
-8.4.2
+9.0.1
 ```
 
 ## .bazelrc
 
 ```
-common --enable_bzlmod
-
 # Filter out warnings from external packages (only show output from local code)
 build --output_filter='^//(Apps|Packages)/'
 
 # Required for rules_xcodeproj compatibility
 build:rules_xcodeproj --spawn_strategy=sandboxed,remote,worker,local
+```
+
+Add if any external dep uses `cc_library`/`objc_library` without an explicit `load()` (e.g. `yams` via SwiftLint). Bazel 9 removed these from core:
+```
+common --incompatible_autoload_externally=+@rules_cc
 ```
 
 Add iOS simulator lines only if you have iOS targets:
@@ -76,7 +78,7 @@ included:
 
 ## WORKSPACE
 
-Empty file — required by Bazel alongside MODULE.bazel when using bzlmod.
+Not needed for Bazel 9 — WORKSPACE support was removed entirely. Do not create this file for new projects. If migrating from Bazel 8, delete the existing empty WORKSPACE file.
 
 ## MODULE.bazel
 
@@ -89,25 +91,25 @@ module(
 )
 
 # IMPORTANT: apple_support must come ABOVE rules_cc for toolchain registration order
-bazel_dep(name = "apple_support", version = "1.23.1")
-bazel_dep(name = "rules_cc", version = "0.1.5")
+bazel_dep(name = "apple_support", version = "2.5.0")
+bazel_dep(name = "rules_cc", version = "0.2.17")
 
 # Gazelle for BUILD file generation
-bazel_dep(name = "gazelle", version = "0.45.0")
+bazel_dep(name = "gazelle", version = "0.48.0")
 
 # Core Apple/Swift rules
-bazel_dep(name = "rules_swift", version = "3.1.2")
-bazel_dep(name = "rules_apple", version = "4.2.0")
-bazel_dep(name = "rules_swift_package_manager", version = "1.11.0")
-bazel_dep(name = "rules_xcodeproj", version = "3.5.1")
+bazel_dep(name = "rules_swift", version = "3.5.0")
+bazel_dep(name = "rules_apple", version = "4.5.2")
+bazel_dep(name = "rules_swift_package_manager", version = "1.13.0")
+bazel_dep(name = "rules_xcodeproj", version = "4.0.0")
 
 # SwiftLint (optional — remove if not using)
-bazel_dep(name = "swiftlint", version = "0.62.2", repo_name = "SwiftLint")
+bazel_dep(name = "swiftlint", version = "0.63.2", repo_name = "SwiftLint")
 
 # Swift Gazelle plugin
 bazel_dep(name = "swift_gazelle_plugin", version = "0.2.2")
 
-# Apple CC toolchain configuration for Bazel 8
+# Apple CC toolchain configuration for Bazel 9
 apple_cc_configure = use_extension(
     "@apple_support//crosstool:setup.bzl",
     "apple_cc_configure_extension",
@@ -134,12 +136,30 @@ use_repo(
 # swift_deps END
 ```
 
-### Known compatible version set (tested March 2026)
+### Known compatible version set — Bazel 9 (tested March 2026)
 
 These versions work together as a set:
 
 | Rule | Version |
 |------|---------|
+| Bazel | 9.0.1 |
+| apple_support | 2.5.0 |
+| rules_cc | 0.2.17 |
+| gazelle | 0.48.0 |
+| rules_swift | 3.5.0 |
+| rules_apple | 4.5.2 |
+| rules_swift_package_manager | 1.13.0 |
+| rules_xcodeproj | 4.0.0 |
+| swiftlint | 0.63.2 |
+| swift_gazelle_plugin | 0.2.2 |
+
+### Legacy version set — Bazel 8 (tested March 2026)
+
+Use these only if you must stay on Bazel 8. Bazel 8 requires an empty `WORKSPACE` file and `common --enable_bzlmod` in `.bazelrc`.
+
+| Rule | Version |
+|------|---------|
+| Bazel | 8.4.2 |
 | apple_support | 1.23.1 |
 | rules_cc | 0.1.5 |
 | gazelle | 0.45.0 |
@@ -149,7 +169,6 @@ These versions work together as a set:
 | rules_xcodeproj | 3.5.1 |
 | swiftlint | 0.62.2 |
 | swift_gazelle_plugin | 0.2.2 |
-| Bazel | 8.4.2 |
 
 ## Package.swift
 
@@ -474,7 +493,6 @@ project-root/
 ├── .bazelignore
 ├── .gitignore
 ├── .swiftlint.yml
-├── WORKSPACE                  (empty)
 ├── MODULE.bazel
 ├── MODULE.bazel.lock          (auto-generated, commit to VCS)
 ├── BUILD.bazel                (root: gazelle, version, aliases)
