@@ -1,0 +1,16 @@
+{
+  "name": "swift-tools",
+  "owner": {
+    "name": "jakes"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for Swift development"
+  },
+  "plugins": [
+    {
+      "name": "swift-bazel",
+      "source": "./plugins/swift-bazel",
+      "description": "Set up and maintain Bazel builds for Swift/macOS/iOS projects. Includes project templates, dependency tree knowledge, version compatibility guidance, and context7 doc lookup IDs."
+    }
+  ]
+}
