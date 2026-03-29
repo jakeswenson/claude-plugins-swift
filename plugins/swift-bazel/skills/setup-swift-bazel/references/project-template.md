@@ -225,6 +225,7 @@ alias(
 apple_bundle_version(
     name = "version",
     build_version = "0.0.0",
+    short_version_string = "0.0.0",
     visibility = ["//visibility:public"],
 )
 
@@ -420,9 +421,15 @@ Minimal macOS Info.plist. Add keys as needed.
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleName</key>
+	<string>MyApp</string>
+	<key>CFBundleDisplayName</key>
+	<string>MyApp</string>
 </dict>
 </plist>
 ```
+
+`CFBundleName` and `CFBundleDisplayName` are needed for Gatekeeper and macOS dialogs to show the app name correctly (otherwise they display "(null)"). Version strings (`CFBundleVersion`, `CFBundleShortVersionString`) are injected automatically by the `apple_bundle_version` rule — do not add them here.
 
 Add these keys as needed:
 - `ATSApplicationFontsPath` — for bundled fonts (value: the folder name under Resources/)
