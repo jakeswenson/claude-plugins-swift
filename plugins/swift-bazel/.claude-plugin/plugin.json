@@ -1,5 +1,5 @@
 {
   "name": "swift-bazel",
   "description": "Set up and maintain Bazel builds for Swift/macOS/iOS projects. Includes project templates, dependency tree knowledge, version compatibility guidance, and context7 doc lookup IDs for rules_swift, rules_apple, rules_swift_package_manager, and rules_xcodeproj.",
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

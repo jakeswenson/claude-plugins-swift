@@ -40,10 +40,13 @@ build --output_filter='^//(Apps|Packages)/'
 # disable index-while-building (index-import tool missing in xcodeproj output base).
 build:rules_xcodeproj --spawn_strategy=worker,sandboxed,remote,local
 build:rules_xcodeproj --features=-swift.index_while_building
-```
 
-Add if any external dep uses `cc_library`/`objc_library` without an explicit `load()` (e.g. `yams` via SwiftLint). Bazel 9 removed these from core:
-```
+# Bazel 9 removed cc_library/objc_library from core — rules_cc re-enables autoloading.
+# Required by: SwiftLint (its Yams dependency uses cc_library via implicit load).
+# If you remove SwiftLint and have no other C/ObjC deps, you can remove this line
+# AND the rules_cc bazel_dep in MODULE.bazel.
+# Once Yams/SwiftLint add explicit load() statements for cc_library, this flag can
+# be removed (keep the rules_cc bazel_dep — Yams still needs the rules themselves).
 common --incompatible_autoload_externally=+@rules_cc
 ```
 
